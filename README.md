@@ -293,35 +293,6 @@ kubectl top pods -n nagp-assignment
 2. **Use GKE Spot VMs for stateless workloads**: For the stateless API tier, use Spot VMs (up to 91% cheaper on GCP). Only the database tier needs on-demand instances for reliability. Configure node pools with `--spot` flag.
 
 3. **GKE Cluster Autoscaler + Off-peak scaling**: Use GKE's built-in cluster autoscaler to remove underutilized nodes. Combine with scheduled scaling (CronJobs or KEDA) to reduce HPA `minReplicas` during off-peak hours.
-
-### Resource Optimization Implementation
-
-After observing metrics with `kubectl top pods`, the resource values in `api-deployment.yaml` have been tuned:
-- CPU request set to 100m (observed avg: ~80m) with headroom
-- Memory request set to 256Mi (observed avg: ~200Mi) with headroom
-- Limits set at 5x CPU and 2x memory to handle burst traffic without throttling
-
-### GCP-Specific Cost Optimizations
-
-- **E2 machine type**: Using `e2-medium` (2 vCPU, 4GB) — cost-effective for moderate workloads
-- **Regional cluster**: Single-zone deployment to reduce cross-zone traffic costs
-- **Autoscaling nodes**: `--min-nodes 1 --max-nodes 3` ensures we only pay for what we use
-- **PD Standard**: Using `standard-rwo` storage class (cheaper than SSD for demo workloads)
-
----
-
-## Cleanup (Avoid Charges!)
-
-```bash
-# Remove the app resources
-kubectl delete -f k8s/ --ignore-not-found=true
-
-# Delete the cluster (stops all billing)
-gcloud container clusters delete nagp-cluster --zone us-east1-b --quiet
-```
-
-⚠️ **Important**: Always delete your GKE cluster after demos to avoid ongoing charges!
-
 ---
 
 ## Project Structure
@@ -351,9 +322,6 @@ nagp-k8s-assignment/
 ├── postman/
 │   ├── NAGP-Employee-API.postman_collection.json
 │   └── bulk-employees.json
-├── COMMANDS.md
-├── PLAN.md
 ├── pom.xml
 ├── README.md
-└── DOCUMENTATION.md
 ```
