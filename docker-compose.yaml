@@ -1,0 +1,34 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: nagp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Root@1994
+      MYSQL_DATABASE: employeedb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pRoot@1994"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    image: zeeshanali242/k8s-assignment-api:1.1.0
+    container_name: nagp-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/employeedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: Root@1994
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql-data:
+

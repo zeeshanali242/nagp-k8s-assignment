@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: nagp-assignment
+  labels:
+    app: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  # standard gcp pd, cheaper than ssd
+  storageClassName: standard-rwo
+  resources:
+    requests:
+      storage: 8Gi
+
